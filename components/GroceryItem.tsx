@@ -3,6 +3,7 @@ import { Grocery } from "../types/Grocery";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import EditGroceryModal from "./EditGroceryModal";
+import DeleteConfirmModal from "./DeleteConfirmModal";
 
 export default function GroceryItem({
   item,
@@ -12,6 +13,7 @@ export default function GroceryItem({
   setItems: React.Dispatch<React.SetStateAction<Grocery[]>>;
 }) {
   const [editVisible, setEditVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
 
   const toggleComplete = () => {
     setItems(prev =>
@@ -21,20 +23,20 @@ export default function GroceryItem({
     );
   };
 
-  const remove = () => {
-    setItems(prev => prev.filter(i => i.id !== item.id));
-  };
-
   const saveEdit = (updated: Grocery) => {
     setItems(prev =>
       prev.map(i => (i.id === updated.id ? updated : i))
     );
   };
 
+  const confirmDelete = () => {
+    setItems(prev => prev.filter(i => i.id !== item.id));
+    setDeleteVisible(false);
+  };
+
   return (
     <>
       <View style={styles.card}>
-        {/* Left section */}
         <TouchableOpacity
           style={styles.left}
           onPress={toggleComplete}
@@ -59,28 +61,34 @@ export default function GroceryItem({
           </View>
         </TouchableOpacity>
 
-        {/* Right actions */}
         <View style={styles.actions}>
           <TouchableOpacity onPress={() => setEditVisible(true)}>
             <Ionicons name="pencil" size={18} color="#64748b" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={remove}>
+          <TouchableOpacity onPress={() => setDeleteVisible(true)}>
             <Ionicons name="trash-outline" size={18} color="#ef4444" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Edit Modal */}
       <EditGroceryModal
         visible={editVisible}
         item={item}
         onClose={() => setEditVisible(false)}
         onSave={saveEdit}
       />
+
+      <DeleteConfirmModal
+        visible={deleteVisible}
+        itemName={item.name}
+        onCancel={() => setDeleteVisible(false)}
+        onConfirm={confirmDelete}
+      />
     </>
   );
 }
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
