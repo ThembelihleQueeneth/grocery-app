@@ -1,4 +1,11 @@
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 import { useState } from "react";
 import { Grocery } from "../types/Grocery";
 import GroceryItem from "../components/GroceryItem";
@@ -7,13 +14,14 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function Index() {
   const [name, setName] = useState("");
-  const [qty, setQty] = useState("1");
-  const [price, setPrice] = useState("0");
+  const [qty, setQty] = useState("");
+  const [price, setPrice] = useState("");
   const [items, setItems] = useState<Grocery[]>([]);
-  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const [filter, setFilter] =
+    useState<"all" | "active" | "completed">("all");
 
   const addItem = () => {
-    if (!name) return;
+    if (!name || !qty || !price) return;
 
     setItems(prev => [
       ...prev,
@@ -27,8 +35,8 @@ export default function Index() {
     ]);
 
     setName("");
-    setQty("1");
-    setPrice("0");
+    setQty("");
+    setPrice("");
   };
 
   const filteredItems = items.filter(item => {
@@ -42,14 +50,34 @@ export default function Index() {
     0
   );
 
+  const completedCount = items.filter(i => i.completed).length;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        <Ionicons name="cart" size={24} /> Grocery List
-      </Text>
+      {/* Header Card */}
+      <View style={styles.headerCard}>
+        <View style={styles.headerLeft}>
+          <View style={styles.iconBox}>
+            <Ionicons name="cart" size={20} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.headerTitle}>Grocery List</Text>
+            <Text style={styles.headerSubtitle}>
+              Organize your shopping efficiently
+            </Text>
+          </View>
+        </View>
 
-      {/* Inputs */}
-      <View style={styles.row}>
+        <View style={styles.headerRight}>
+          <Text style={styles.totalAmount}>R{grandTotal.toFixed(2)}</Text>
+          <Text style={styles.completedText}>
+            {completedCount}/{items.length} completed
+          </Text>
+        </View>
+      </View>
+
+      {/* Input Card */}
+      <View style={styles.inputCard}>
         <TextInput
           placeholder="Item name"
           style={styles.input}
@@ -57,21 +85,23 @@ export default function Index() {
           onChangeText={setName}
         />
         <TextInput
-          placeholder="Enter qty"
-          style={styles.inputSmall}
+          placeholder="Quantity"
+          style={styles.input}
           keyboardType="numeric"
           value={qty}
           onChangeText={setQty}
         />
         <TextInput
-          placeholder="Enter price"
-          style={styles.inputSmall}
+          placeholder="Price (R)"
+          style={styles.input}
           keyboardType="numeric"
           value={price}
           onChangeText={setPrice}
         />
+
         <TouchableOpacity style={styles.addBtn} onPress={addItem}>
-          <Text style={{ color: "#fff" }}>Add</Text>
+          <Ionicons name="add" size={18} color="#fff" />
+          <Text style={styles.addText}>Add</Text>
         </TouchableOpacity>
       </View>
 
@@ -85,19 +115,105 @@ export default function Index() {
         renderItem={({ item }) => (
           <GroceryItem item={item} setItems={setItems} />
         )}
+        contentContainerStyle={{ paddingBottom: 40 }}
       />
-
-      <Text style={styles.total}>Grand Total: R{grandTotal.toFixed(2)}</Text>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1, backgroundColor: "#f5f6fa" },
-  title: { fontSize: 22, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  row: { flexDirection: "row", gap: 8 },
-  input: { flex: 2, borderWidth: 1, padding: 8, borderRadius: 6 },
-  inputSmall: { flex: 1, borderWidth: 1, padding: 8, borderRadius: 6 },
-  addBtn: { backgroundColor: "#4f46e5", padding: 12, borderRadius: 6 },
-  total: { fontWeight: "bold", textAlign: "right", marginTop: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff6f6",
+    padding: 16,
+  },
+
+  headerCard: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+
+  headerLeft: {
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "center",
+  },
+
+  iconBox: {
+    backgroundColor: "#FF1493",
+    padding: 10,
+    borderRadius: 20,
+  },
+
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  headerSubtitle: {
+    fontSize: 12,
+    color: "#777",
+  },
+
+  headerRight: {
+    alignItems: "flex-end",
+  },
+
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#FF1493",
+  },
+
+  completedText: {
+    fontSize: 12,
+    color: "#777",
+  },
+
+  inputCard: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 14,
+  },
+
+  addBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#FF1493",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+
+  addText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
 });
