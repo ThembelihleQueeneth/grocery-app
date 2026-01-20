@@ -57,7 +57,7 @@ A sleek and efficient React Native shopping list application that helps you orga
 
 1. Clone the repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/ThembelihleQueeneth/grocery-app.git
 cd shopping-list-app
 ```
 
